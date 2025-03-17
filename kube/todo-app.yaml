@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: todo-app
+spec:
+  selector:
+    app: todo-app
+  ports:
+    - port: 80
+      targetPort: 5000
+  type: LoadBalancer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: todo-app
+spec:
+  replicas: 3   # Update the number of replicas to 3 to test the Rolling Update Strategy, originally set to 1 in Part 3. 
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: yw5490/flask-todo-app:latest
+          # image: yw5490/flask-todo-app:v3
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_HOST
+              value: mongo
+            - name: MONGO_PORT
+              value: "27017"
+          resources:
+            limits:
+              cpu: "1" # specify CPU limit (e.g., 0.5 cores)
+              memory: "512Mi" # specify memory limit (e.g., 512 megabytes)
+          imagePullPolicy: Always
+          livenessProbe:
+            httpGet:
+              path: /
+              # path: /test
+              port: 5000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              # path: /test
+              port: 5000
+            initialDelaySeconds: 3
+            periodSeconds: 3

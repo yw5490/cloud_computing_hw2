@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: todo-app-with-rc
+spec:
+  replicas: 3
+  # replicas: 5   # Change to 5 to test the scale up functionality of the Replication Controller. 
+  selector:
+    app: todo-app
+  template:
+    metadata:
+      labels:
+        app: todo-app
+    spec:
+      containers:
+        - name: todo-app
+          image: yw5490/flask-todo-app:latest
+          ports:
+            - containerPort: 5000
+          env:
+            - name: MONGO_HOST
+              value: mongo
+            - name: MONGO_PORT
+              value: "27017"
+          resources:
+            limits:
+              cpu: "1" # specify CPU limit (e.g., 0.5 cores)
+              memory: "512Mi" # specify memory limit (e.g., 512 megabytes)
+          imagePullPolicy: Always
