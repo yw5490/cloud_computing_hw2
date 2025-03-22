@@ -49,12 +49,12 @@ spec:
               path: /
               # path: /test
               port: 5000
-            initialDelaySeconds: 5
+            initialDelaySeconds: 10
             periodSeconds: 5
           readinessProbe:
             httpGet:
               path: /
               # path: /test
               port: 5000
-            initialDelaySeconds: 3
+            initialDelaySeconds: 5
             periodSeconds: 3
